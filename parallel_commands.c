@@ -96,7 +96,7 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
 }
 
 void parse_command(parallel_commands** pc_ptr, char* new_line) {
-    char* last_part = new_line;
+    char* last_part = strtok_r(new_line, "\n", &last_part);
     const char* sep_char = NULL;
     char* sep = NULL;
     command_array* command_arr = quick_new_command_arr();
@@ -143,7 +143,7 @@ void parse_command(parallel_commands** pc_ptr, char* new_line) {
     if (last_part != NULL) {
         push_command(&command_arr, strdup(last_part));
     }
-    
+
     wrap_up_command(&command_arr);
     free(new_line);
 }

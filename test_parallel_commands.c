@@ -98,6 +98,22 @@ void test_parallel_commands() {
     assert(cmd->commands[2] == NULL);
     assert(cmd->current == 3);
 
+    parse_command(&pc, strdup("\n"));
+    assert(pc->current == 6);
+    assert(pc->length == 8);
+
+    cmd = pc->command_arrays[pc->current-1];
+    assert(cmd->commands[0] == NULL);
+    assert(cmd->current == 1);
+
+    parse_command(&pc, strdup(""));
+    assert(pc->current == 7);
+    assert(pc->length == 8);
+   
+    cmd = pc->command_arrays[pc->current-1];
+    assert(cmd->commands[0] == NULL);
+    assert(cmd->current == 1);
+
     free_parallel_commands_and_all(&pc);
 }
 
