@@ -1,5 +1,4 @@
 #include "commands.h"
-#include <stdio.h>
 
 command_array* new_command_arr(int size, int current, char* std_out) {
     command_array* command_arr = malloc(sizeof(command_array));

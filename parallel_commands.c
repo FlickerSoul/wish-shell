@@ -1,5 +1,4 @@
 #include "parallel_commands.h"
-#include <stdio.h>
 
 const char* operators[] = {">", "&"};
 unsigned short operator_num = 2;
