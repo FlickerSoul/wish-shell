@@ -20,15 +20,18 @@ void free_command_arr(command_array* command_arr) {
     free(command_arr);
 }
 
-void free_all_commands_and_arr(command_array* command_arr) {
-    if (command_arr == NULL) {
+void free_all_commands_and_arr(command_array** command_arr_ptr) {
+    if (command_arr_ptr == NULL || *command_arr_ptr == NULL) {
         return;
     }
 
-    for (int i = 0; i < command_arr->length; i++) {
+    command_array* command_arr = *command_arr_ptr;
+
+    for (int i = 0; i < command_arr->current; i++) {
         free(command_arr->commands[i]);
     }
     free_command_arr(command_arr);
+    *command_arr_ptr = NULL;
 }
 
 command_array* resize_command_arr(command_array* old_arr) {
