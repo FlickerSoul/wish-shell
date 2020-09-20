@@ -85,6 +85,23 @@ void execute(command_array* cmd) {
     }
 }
 
+wish_state* init_wish_state() {
+    wish_state* state = malloc(sizeof(wish_state));
+    if (state == NULL) {
+        return NULL;
+    }
+    
+    state->path = "/bin:/usr/bin";
+    return state;
+}
+
+void destroy_wish_state(wish_state* state) {
+    if (state == NULL) {
+        return;
+    }
+    free(state);
+}
+
 /**
  * run batch mode by specifying 
  * a batch file path
