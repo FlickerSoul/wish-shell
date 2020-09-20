@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <assert.h>
 #include "commands.h"
+#include "test_utils.h"
 
 void test_commands() {
     command_array* c = new_command_arr(1, 0);
@@ -10,12 +9,12 @@ void test_commands() {
 
     char* dummy_command = "command";
     push_command(&c, strdup(dummy_command));
-    assert(strcmp(dummy_command, c->commands[0]) == 0);
+    assert(compare_string(dummy_command, c->commands[0]));
     assert(c->length == 2);
     assert(c->current == 1);
 
     push_command(&c, strdup(dummy_command));
-    assert(strcmp(dummy_command, c->commands[1]) ==0);
+    assert(compare_string(dummy_command, c->commands[1]));
     assert(c->length == 4);
     assert(c->current == 2);
 
@@ -23,8 +22,6 @@ void test_commands() {
     assert(c == NULL);
 }
 
-int main(int argc, char* argv[]) {
-    char* a = malloc(sizeof(char));
-    free(a);
+int main() {
     test_commands();
 }
