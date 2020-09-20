@@ -77,32 +77,41 @@ void push_command_array(parallel_commands** pc_ptr, command_array* new_command_a
     }
 }
 
-command_array* parse_command_(char* new_line) {
+command_array* parse_operator(command_array* command_arr, char operator, char** last_part_ptr) {
+    if (operator == '&') {
+        command_arr = quick_new_command_arr();
+    } else if( operator == '>') {
+        char* sep = strtok_r(*last_part_ptr, " ", last_part_ptr);
+        if (sep == NULL) {
+            return NULL;
+        }
+        command_arr->std_out = strdup(sep);
+    }
+
+    return command_arr;
+}
+
+void parse_command(parallel_commands** pc_ptr, char* new_line) {
     char* last_part = new_line;
     char* sep = NULL;
     command_array* command_arr = quick_new_command_arr();
+    command_array* temp_arr = NULL;
+    push_command_array(pc_ptr, command_arr);
     while ((sep = strtok_r(last_part, " ", &last_part)) != NULL) {
         // when there is nothing in the the last part
         // sep == NULL; do while makes sure that last 
         // ele in arr in NULL
         if (is_operator(sep)) {
-            printf("%s is operator\n", sep);
+            temp_arr = parse_operator(command_arr, sep[0], &last_part);
+            if (temp_arr != command_arr) {
+                wrap_up_command(&command_arr);
+                command_arr = temp_arr;
+                push_command_array(pc_ptr, command_arr);
+            }
         } else {
             push_command(&command_arr, strdup(sep));
         }
     }
-    push_command(&command_arr, NULL);
-    if (command_arr->current == 1) {
-        // when there is just NULL
-        return NULL;
-    }
-    return command_arr;
-}
-
-void parse_command(parallel_commands** pc_ptr, char* new_line) {
-    command_array* new_command_arr = parse_command_(new_line);
-    if (new_command_arr != NULL) {
-        push_command_array(pc_ptr, new_command_arr);
-    }
+    wrap_up_command(&command_arr);
     free(new_line);
 }

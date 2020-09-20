@@ -15,5 +15,6 @@ void free_parallel_commands(parallel_commands* pc);
 void free_parallel_commands_and_all(parallel_commands** pc_ptr);
 void resize_parallel_commands(parallel_commands** old_cmds_ptr);
 void push_command_array(parallel_commands** pc_ptr, command_array* new_command_arr);
-command_array* parse_command_(char* new_line);
 void parse_command(parallel_commands** pc_ptr, char* new_line);
+
+command_array* parse_operator(command_array* command_arr_ptr, char operator, char** last_part);
