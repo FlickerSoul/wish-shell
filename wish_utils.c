@@ -74,16 +74,21 @@ void redirect_stdout() {
 
 }
 
-void execute(command_array* cmd) {
+void execute(parallel_commands* pc) {
     // get the path var 
     // use access to find command 
+    for (int i = 0; i < pc->current; i++) {
+        command_array* cmd = pc->command_arrays[i];
 
-    if (cmd->commands[0] == NULL) {
-        return;
-    }
+        if (cmd->commands[0] == NULL) {
+            continue;
+        }
 
-    if (is_built_in_command(cmd)) {
-        exec_built_in_command(cmd);
+        if (is_built_in_command(cmd)) {
+            exec_built_in_command(cmd);
+        } else {
+            exec_command(cmd);
+        }
     }
 }
 
@@ -117,4 +122,18 @@ void interactive_mode() {
     // Close file 
     // read line by line? 
     // exec command by command 
+    if (shell_state == NULL) {
+        perror("Cannot init shell. Exiting.\n");
+        exit(1);
+    }
+
+    char* new_line = NULL;
+    size_t line_size = 0;
+    while(1) {
+        prompt_input(&new_line, &line_size, stdin);
+        parallel_commands* pc = quick_new_parallel_commands();
+        parse_command(&pc, new_line);
+        execute(pc);
+        free_parallel_commands_and_all(&pc);
+    }
 }
