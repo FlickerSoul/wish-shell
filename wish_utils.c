@@ -39,7 +39,7 @@ void path_(command_array* cmd) {
     
 }
 
-char* built_in_commands = {"exit", "cd",  "path"};
+const char* built_in_commands[] = {"exit", "cd",  "path"};
 unsigned short built_in_command_num = 3;
 
 bool is_built_in_command(command_array* cmd) {
@@ -65,7 +65,7 @@ void exec_built_in_command(command_array* cmd) {
 }
 
 void exec_command(command_array* cmd) {
-    
+
 }
 
 void redirect_stdout() {
