@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "commands.h"
 
-bool is_operator(char* part);
+const char* is_operator(char part);
 
 typedef struct parallel_commands {
     unsigned int length;

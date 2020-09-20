@@ -1,15 +1,17 @@
 #include "parallel_commands.h"
+#include <stdio.h>
 
-const char* operators[] = {">", "&"};
+const char operators[] = {' ', '>', '&'};
+const char* operator_map[] = {" ", ">", "&"};
 unsigned short operator_num = 2;
 
-bool is_operator(char* part) {
+const char* is_operator(char part) {
     for (int i = 0; i < operator_num; i++) {
-        if (!strcmp(part, operators[i])) {
-            return true;
+        if (part == operators[i]) {
+            return operator_map[i];
         }
     }
-    return false;
+    return NULL;
 }
 
 parallel_commands* new_parallel_commands(int size, int current) {
@@ -84,7 +86,7 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
         if (sep == NULL) {
             return NULL;
         }
-        command_arr->std_out = strdup(sep);
+        put_std_out(command_arr, strdup(sep));
     }
 
     return command_arr;
@@ -92,25 +94,55 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
 
 void parse_command(parallel_commands** pc_ptr, char* new_line) {
     char* last_part = new_line;
+    const char* sep_char = NULL;
     char* sep = NULL;
     command_array* command_arr = quick_new_command_arr();
     command_array* temp_arr = NULL;
     push_command_array(pc_ptr, command_arr);
-    while ((sep = strtok_r(last_part, " ", &last_part)) != NULL) {
-        // when there is nothing in the the last part
-        // sep == NULL; do while makes sure that last 
-        // ele in arr in NULL
-        if (is_operator(sep)) {
-            temp_arr = parse_operator(command_arr, sep[0], &last_part);
+
+    int counter = 0;
+    while (counter < strlen(last_part)) {
+        sep_char = is_operator(last_part[counter]);
+
+        if (sep_char != NULL) {
+            // if it's an operator 
+            sep = strtok_r(last_part, sep_char, &last_part);
+            counter = 0;
+            if (sep == NULL) {
+                break;
+            }
+            push_command(&command_arr, strdup(sep));
+
+            temp_arr = parse_operator(command_arr, sep_char[0], &last_part);
+
             if (temp_arr != command_arr) {
                 wrap_up_command(&command_arr);
                 command_arr = temp_arr;
                 push_command_array(pc_ptr, command_arr);
             }
-        } else {
-            push_command(&command_arr, strdup(sep));
         }
+
+        counter += 1;
+        // if it's not pass
     }
+    if (last_part != NULL) {
+        push_command(&command_arr, strdup(last_part));
+    }
+    // while ((sep = strtok_r(last_part, " ", &last_part)) != NULL) {
+    //     // when there is nothing in the the last part
+    //     // sep == NULL; do while makes sure that last 
+    //     // ele in arr in NULL
+    //     if (is_operator(sep)) {
+    //         temp_arr = parse_operator(command_arr, sep[0], &last_part);
+    //         if (temp_arr != command_arr) {
+    //             wrap_up_command(&command_arr);
+    //             command_arr = temp_arr;
+    //             push_command_array(pc_ptr, command_arr);
+    //         }
+    //     } else {
+    //         push_command(&command_arr, strdup(sep));
+    //     }
+    // }
     wrap_up_command(&command_arr);
     free(new_line);
 }
