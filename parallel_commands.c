@@ -96,7 +96,8 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
 }
 
 void parse_command(parallel_commands** pc_ptr, char* new_line) {
-    char* last_part = strtok_r(new_line, "\n", &last_part);
+    // char* last_part = strtok_r(new_line, "", &last_part);
+    char* last_part = new_line;
     const char* sep_char = NULL;
     char* sep = NULL;
     command_array* command_arr = quick_new_command_arr();
@@ -118,30 +119,31 @@ void parse_command(parallel_commands** pc_ptr, char* new_line) {
 
             // printf("sep: %s\n", sep);
 
-            if (sep == NULL) {
-                break;
+            if (sep != NULL) {
+                // break;
+                push_command(&command_arr, strdup(sep));
             }
-            push_command(&command_arr, strdup(sep));
 
             temp_arr = parse_operator(command_arr, sep_char[0], &last_part);
 
             if (temp_arr != command_arr) {
                 if (temp_arr == NULL) {
-                    printf("operator err");
+                    printf("operator err\n");
                 }
                 // printf("new temp arr");
                 wrap_up_command(&command_arr);
                 command_arr = temp_arr;
                 push_command_array(pc_ptr, command_arr);
             }
+        } else {
+            counter += 1;
         }
-
-        counter += 1;
         // if it's not pass
     }
     // printf("remaining last part: %s\n", last_part);
-    if (last_part != NULL) {
-        push_command(&command_arr, strdup(last_part));
+    sep = strtok_r(last_part, "", &last_part);
+    if (sep != NULL) {
+        push_command(&command_arr, strdup(sep));
     }
 
     wrap_up_command(&command_arr);
