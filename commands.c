@@ -57,7 +57,14 @@ void resize_command_arr(command_array** old_arr_ptr) {
 }
 
 void put_std_out(command_array* command_arr, char* std_out) {
+    if (command_arr == NULL) {
+        return;
+    }
     command_arr->std_out = std_out;
+}
+
+void wrap_up_command(command_array** command_arr_ptr) {
+    push_command(command_arr_ptr, NULL);
 }
 
 void push_command(command_array** command_arr_ptr, char* command) {
