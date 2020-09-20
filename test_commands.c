@@ -21,9 +21,11 @@ void test_commands() {
     assert(compare_string(c->std_out, dummy_out_name));
 
     push_command(&c, dummy_command2);
+    wrap_up_command(&c);
     assert(compare_string(dummy_command2, c->commands[1]));
+    assert(c->commands[2] == NULL);
     assert(c->length == 4);
-    assert(c->current == 2);
+    assert(c->current == 3);
 
     assert(compare_string(c->std_out, dummy_out_name));
     
