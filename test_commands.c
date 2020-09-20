@@ -2,7 +2,8 @@
 #include "test_utils.h"
 
 void test_commands() {
-    command_array* c = new_command_arr(1, 0);
+    command_array* c = quick_new_command_arr();
+    c = new_command_arr(1, 0);
     assert(c != NULL);
     assert(c->length == 1);
     assert(c->current == 0);
