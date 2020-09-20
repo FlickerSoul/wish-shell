@@ -25,11 +25,17 @@ test_commands.o: test_commands.c commands.o test_utils.o
 test_parallel_commands.o: test_parallel_commands.c parallel_commands.o commands.o test_utils.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
 
+test_wish_utils.o: test_wish_utils.c wish_utils.o parallel_commands.o commands.o test_utils.o
+	$(CXX) $(CXX_FLAGS) -o $@ $^
+
 test_commands: test_commands.o
 	./test_commands.o
 
 test_parallel_commands: test_parallel_commands.o
 	./test_parallel_commands.o
+
+test_wish_utils: test_wish_utils.o
+	./test_wish_utils.o < wish_utils_test.in
 
 wish: wish.c wish_utils.o commands.o parallel_commands.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
