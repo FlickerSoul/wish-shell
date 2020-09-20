@@ -71,17 +71,32 @@ void test_parallel_commands() {
     assert(cmd->commands[3] == NULL);
     assert(cmd->current == 4);
 
-    parse_command(&pc, strdup("g>h t"));
+    parse_command(&pc, strdup("g>h i"));
     assert(pc->current == 3);
     assert(pc->length == 4);
 
     cmd = pc->command_arrays[pc->current-1];
     assert(compare_string(cmd->commands[0], "g"));
-    assert(compare_string(cmd->commands[1], "t"));
+    assert(compare_string(cmd->commands[1], "i"));
     assert(cmd->commands[2] == NULL);
     assert(compare_string(cmd->std_out, "h"));
     assert(cmd->current == 3);
 
+    parse_command(&pc, strdup("j k&l m>n"));
+    assert(pc->current == 5);
+    assert(pc->length == 8);
+
+    cmd = pc->command_arrays[pc->current-2];
+    assert(compare_string(cmd->commands[0], "j"));
+    assert(compare_string(cmd->commands[1], "k"));
+    assert(cmd->commands[2] == NULL);
+    assert(cmd->current == 3);
+
+    cmd = pc->command_arrays[pc->current-1];
+    assert(compare_string(cmd->commands[0], "l"));
+    assert(compare_string(cmd->commands[1], "m"));
+    assert(cmd->commands[2] == NULL);
+    assert(cmd->current == 3);
 
     free_parallel_commands_and_all(&pc);
 }
