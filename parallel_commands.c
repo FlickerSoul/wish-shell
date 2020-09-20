@@ -1,4 +1,8 @@
 #include "parallel_commands.h"
+#include <stdio.h>
+
+const char* operators[] = {">", "&"};
+unsigned short operator_num = 2;
 
 bool is_operator(char* part) {
     for (int i = 0; i < operator_num; i++) {
@@ -37,7 +41,7 @@ void free_parallel_commands_and_all(parallel_commands** pc_ptr) {
     parallel_commands* pc = *pc_ptr;
 
     for (int i = 0; i < pc->current; i++) {
-        free_all_commands_and_arr(pc->command_arrays[i]);
+        free_all_commands_and_arr(&pc->command_arrays[i]);
     }
     free_parallel_commands(pc);
     *pc_ptr = NULL;
@@ -73,26 +77,32 @@ void push_command_array(parallel_commands** pc_ptr, command_array* new_command_a
     }
 }
 
-void parse_command(parallel_commands** pc_ptr, char* new_line) {
+command_array* parse_command_(char* new_line) {
     char* last_part = new_line;
     char* sep = NULL;
     command_array* command_arr = quick_new_command_arr();
-    do {
-        sep = strtok_r(last_part, " ", &last_part);
-        if (is_operator(sep)) {
-            printf("got operator: %s", sep);
-        } else {
-            push_command(&command_arr, strdup(sep));
-        }
+    while ((sep = strtok_r(last_part, " ", &last_part)) != NULL) {
         // when there is nothing in the the last part
         // sep == NULL; do while makes sure that last 
         // ele in arr in NULL
-    } while (sep != NULL);
-
+        if (is_operator(sep)) {
+            printf("%s is operator\n", sep);
+        } else {
+            push_command(&command_arr, strdup(sep));
+        }
+    }
+    push_command(&command_arr, NULL);
     if (command_arr->current == 1) {
         // when there is just NULL
-        return;
+        return NULL;
     }
-    
-    push_command_array(pc_ptr, command_arr);
+    return command_arr;
+}
+
+void parse_command(parallel_commands** pc_ptr, char* new_line) {
+    command_array* new_command_arr = parse_command_(new_line);
+    if (new_command_arr != NULL) {
+        push_command_array(pc_ptr, new_command_arr);
+    }
+    free(new_line);
 }
