@@ -45,7 +45,7 @@ unsigned short built_in_command_num = 3;
 bool is_built_in_command(command_array* cmd) {
     char* cmd_str = cmd->commands[0];
     for (int i = 0; i < built_in_command_num; i++) {
-        if (strcmp(cmd_str, built_in_commands[i]) == 0) {
+        if (!strcmp(cmd_str, built_in_commands[i])) {
             return true;
         }
     }
@@ -59,7 +59,7 @@ void exec_built_in_command(command_array* cmd) {
         exit_();
     } else if (!strcmp(cmd_str, "cd")) {
         cd_(cmd);
-    } else if (!strcmp(cmd_str), "path") {
+    } else if (!strcmp(cmd_str, "path")) {
         path_(cmd);
     }
 }
