@@ -1,6 +1,8 @@
 #include "wish_utils.h"
 
 wish_state* shell_state = NULL;
+char cwd[PATH_MAX];
+
 
 void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     printf("wish> ");
@@ -38,7 +40,13 @@ void exit_() {
  * or the dir does not exit.
  */
 void cd_(command_array* cmd) {
+    char* path = cmd->commands[1];
+    int result = chdir(path);
+    if (result != 0) {
+        print_err();
+    }
 
+    printf("%s\n", getcwd(cwd, sizeof(cwd)));
 }
 
 /**

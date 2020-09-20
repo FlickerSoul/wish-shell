@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <limits.h>
 #include "parallel_commands.h"
 
 typedef struct wish_state {
