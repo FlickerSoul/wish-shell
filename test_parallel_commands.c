@@ -106,6 +106,14 @@ void test_parallel_commands() {
     assert(cmd->commands[0] == NULL);
     assert(cmd->current == 1);
 
+    parse_command(&pc, NULL);
+    assert(pc->current == 7);
+    assert(pc->length == 8);
+
+    cmd = pc->command_arrays[pc->current-1];
+    assert(cmd->commands[0] == NULL);
+    assert(cmd->current == 1);
+
     // parse_command(&pc, strdup(">a ls"));
     // assert(pc->current == 7);
     // assert(pc->length == 8);
