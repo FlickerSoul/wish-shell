@@ -34,21 +34,23 @@ void free_all_commands_and_arr(command_array** command_arr_ptr) {
     *command_arr_ptr = NULL;
 }
 
-command_array* resize_command_arr(command_array* old_arr) {
-    if (old_arr == NULL) {
-        return NULL;
+void resize_command_arr(command_array** old_arr_ptr) {
+    if (old_arr_ptr == NULL || *old_arr_ptr == NULL) {
+        return;
     }
+
+    command_array* old_arr = *old_arr_ptr;
 
     command_array* new_arr = new_command_arr(old_arr->length * 2, old_arr->current);
     if (new_arr == NULL) {
-        return old_arr;
+        return;
     }
 
     for (int i = 0; i < old_arr->current; i++) {
         new_arr->commands[i] = old_arr->commands[i];
     }
     free_command_arr(old_arr);
-    return new_arr;
+    *old_arr_ptr = new_arr;
 }
 
 void push_command(command_array** command_arr_ptr, char* command) {
@@ -58,6 +60,6 @@ void push_command(command_array** command_arr_ptr, char* command) {
     command_array* command_arr = *command_arr_ptr;
     command_arr->commands[command_arr->current++] = command;
     if (command_arr->current == command_arr->length) {
-        *command_arr_ptr = resize_command_arr(command_arr);
+        resize_command_arr(command_arr_ptr);
     }
 }
