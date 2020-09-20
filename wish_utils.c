@@ -1,6 +1,6 @@
 #include "wish_utils.h"
 
-wish_state* state;
+wish_state* shell_state = NULL;
 
 void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     printf("wish> ");
@@ -87,21 +87,20 @@ void execute(command_array* cmd) {
     }
 }
 
-wish_state* init_wish_state() {
-    state = malloc(sizeof(wish_state));
-    if (state == NULL) {
-        return NULL;
+void init_wish_state() {
+    shell_state = malloc(sizeof(wish_state));
+    if (shell_state == NULL) {
+        return;
     }
 
-    state->path = "/bin:/usr/bin";
-    return state;
+    shell_state->path = "/bin:/usr/bin";
 }
 
 void destroy_wish_state() {
-    if (state == NULL) {
+    if (shell_state == NULL) {
         return;
     }
-    free(state);
+    free(shell_state);
 }
 
 /**
