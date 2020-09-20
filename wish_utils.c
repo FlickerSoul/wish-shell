@@ -9,12 +9,7 @@ void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     
     int len = strlen(new_line);
 
-    if (len == 1) {
-        free(new_line);
-        new_line = NULL;
-    } else {
-        new_line[len - 1] = '\0';
-    }
+    new_line[len - 1] = '\0';
     
     *input_string_buffer_ptr = new_line;
 }
