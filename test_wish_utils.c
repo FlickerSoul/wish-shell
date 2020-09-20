@@ -13,7 +13,8 @@ void test_prompt_input() {
     free(buffer);
 
     prompt_input(&buffer, &size, stdin);
-    assert(buffer == NULL);
+    assert(compare_string(buffer, ""));
+    free(buffer);
 }
 
 int main() {
