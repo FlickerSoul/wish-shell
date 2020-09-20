@@ -49,11 +49,26 @@ void cd_(command_array* cmd) {
     printf("%s\n", getcwd(cwd, sizeof(cwd)));
 }
 
+void add_shell_path(char* path) {
+    strcat(shell_state->path, path);
+}
+
 /**
  * add path to shell path
  */
 void path_(command_array* cmd) {
-    
+    struct stat sb;
+    char* path = NULL;
+    for (int i = 1; i < cmd->current - 1; i++) {
+        path = cmd->commands[i];
+        if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
+            add_shell_path(":");
+            add_shell_path(path);
+        } else {
+            perror("adding non-dir to path");
+        }
+    }
+    printf("PATH: %s\n", shell_state->path);
 }
 
 const char* built_in_commands[] = {"exit", "cd",  "path"};
@@ -112,14 +127,16 @@ void init_wish_state() {
         return;
     }
 
-    shell_state->path = "/bin:/usr/bin";
+    shell_state->path = strdup("/bin:/usr/bin");
 }
 
 void destroy_wish_state() {
     if (shell_state == NULL) {
         return;
     }
+    free(shell_state->path);
     free(shell_state);
+    shell_state = NULL;
 }
 
 /**
