@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <assert.h>
+#include "commands.h"
+
+void test_commands() {
+    command_array* c = new_command_arr(1, 0);
+    assert(c != NULL);
+    assert(c->length == 1);
+    assert(c->current == 0);
+
+    char* dummy_command = "command";
+    push_command(&c, strdup(dummy_command));
+    assert(strcmp(dummy_command, c->commands[0]) == 0);
+    assert(c->length == 2);
+    assert(c->current == 1);
+
+    push_command(&c, strdup(dummy_command));
+    assert(strcmp(dummy_command, c->commands[1]) ==0);
+    assert(c->length == 4);
+    assert(c->current == 2);
+
+    free_all_commands_and_arr(&c);
+    assert(c == NULL);
+}
+
+int main(int argc, char* argv[]) {
+    char* a = malloc(sizeof(char));
+    free(a);
+    test_commands();
+}
