@@ -64,13 +64,25 @@ void exec_built_in_command(command_array* cmd) {
     }
 }
 
+void exec_command(command_array* cmd) {
+    
+}
+
 void redirect_stdout() {
 
 }
 
-void execute(char* command) {
+void execute(command_array* cmd) {
     // get the path var 
     // use access to find command 
+
+    if (cmd->commands[0] == NULL) {
+        return;
+    }
+
+    if (is_built_in_command(cmd)) {
+        exec_built_in_command(cmd);
+    }
 }
 
 /**
