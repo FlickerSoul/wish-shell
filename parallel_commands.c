@@ -143,21 +143,7 @@ void parse_command(parallel_commands** pc_ptr, char* new_line) {
     if (last_part != NULL) {
         push_command(&command_arr, strdup(last_part));
     }
-    // while ((sep = strtok_r(last_part, " ", &last_part)) != NULL) {
-    //     // when there is nothing in the the last part
-    //     // sep == NULL; do while makes sure that last 
-    //     // ele in arr in NULL
-    //     if (is_operator(sep)) {
-    //         temp_arr = parse_operator(command_arr, sep[0], &last_part);
-    //         if (temp_arr != command_arr) {
-    //             wrap_up_command(&command_arr);
-    //             command_arr = temp_arr;
-    //             push_command_array(pc_ptr, command_arr);
-    //         }
-    //     } else {
-    //         push_command(&command_arr, strdup(sep));
-    //     }
-    // }
+    
     wrap_up_command(&command_arr);
     free(new_line);
 }
