@@ -22,8 +22,10 @@ void test_parallel_commands() {
     assert(compare_string(cmd->commands[0], "a"));
     assert(compare_string(cmd->commands[1], "b"));
     assert(compare_string(cmd->commands[2], "c"));
+    assert(cmd->commands[3] == NULL);
+    assert(cmd->current == 4);
 
-    parse_command(&pc, strdup("d e f"));
+    parse_command(&pc, strdup("   d        e f     "));
     assert(pc->current == 2);
     assert(pc->length == 4);
 
@@ -31,7 +33,8 @@ void test_parallel_commands() {
     assert(compare_string(cmd->commands[0], "d"));
     assert(compare_string(cmd->commands[1], "e"));
     assert(compare_string(cmd->commands[2], "f"));
-
+    assert(cmd->commands[3] == NULL);
+    assert(cmd->current == 4);
 }
 
 int main() {
