@@ -1,12 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
 
 
-void prompt_input(char* input_string_buffer) {
+void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     printf("wish> ");
-    scanf("%s", input_string_buffer);
+    getline(input_string_buffer_ptr, size, input);
 }
 
 /**
@@ -75,22 +76,19 @@ void interactive_mode() {
 int main(int argc, char* argv[]) {
     /**
      * special operator 
-     * > for piping 
+     * > for stdout/stderr 
      * & for parallel executing 
+     * (optional)
+     * | piping 
+     * < stdin
+     * 
+     * readline lib 
+     * environ 
      */
 
-    // if (argc > 1) {
-    //     batch_mode();
-    // } else {
-    //     interactive_mode();
-    // }
-
-    // char a[1];
-    // prompt_input(a);
-    // printf("%s", a);
-    char* myargs[5];
-    myargs[0] = strdup("ls");
-    myargs[1] = NULL;
-
-    execvp(myargs[0], myargs);
+    if (argc > 1) {
+        batch_mode();
+    } else {
+        interactive_mode();
+    }
 }
