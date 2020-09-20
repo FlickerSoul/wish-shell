@@ -4,7 +4,19 @@ wish_state* shell_state = NULL;
 
 void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     printf("wish> ");
-    getline(input_string_buffer_ptr, size, input);
+    char* new_line = NULL;
+    getline(&new_line, size, input);
+    
+    int len = strlen(new_line);
+
+    if (len == 1) {
+        free(new_line);
+        new_line = NULL;
+    } else {
+        new_line[len - 1] = '\0';
+    }
+    
+    *input_string_buffer_ptr = new_line;
 }
 
 /**
@@ -83,7 +95,6 @@ void execute(parallel_commands* pc) {
         if (cmd->commands[0] == NULL) {
             continue;
         }
-
         if (is_built_in_command(cmd)) {
             exec_built_in_command(cmd);
         } else {

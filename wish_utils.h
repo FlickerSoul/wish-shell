@@ -9,5 +9,7 @@ typedef struct wish_state {
 void init_wish_state();
 void destroy_wish_state();
 
+void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input);
+
 void batch_mode();
 void interactive_mode();
