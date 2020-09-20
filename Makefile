@@ -29,7 +29,7 @@ test_parallel_commands: test_parallel_commands.o
 	./test_parallel_commands.o
 
 leak_test: test_commands.o test_parallel_commands.o
-	$(VALGRIND) $^
+	$(VALGRIND) ./test_commands.o test_parallel_commands.o
 
 clean:
 	rm -f *~ *.o $(TARGETS)
