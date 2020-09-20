@@ -16,7 +16,7 @@ parallel_commands.o: parallel_commands.c parallel_commands.h
 test_utils.o: test_utils.c test_utils.h
 	$(CXX) $(CXX_FLAGS) -c -o $@ $<
 
-test_commands.o: test_commands.c commands.o
+test_commands.o: test_commands.c commands.o test_utils.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
 
 test_parallel_commands.o: test_parallel_commands.c parallel_commands.o commands.o test_utils.o
