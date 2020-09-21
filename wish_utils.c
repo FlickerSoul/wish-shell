@@ -175,16 +175,25 @@ pid_t exec_command(command_array* cmd) {
     return new_pid;
 }
 
+bool non_empty_cmd(command_array* cmd) {
+    return cmd->std_out != NULL;
+}
+
 void execute(parallel_commands* pc) {
     // get the path var 
     // use access to find command 
     pid_t pid_arr[pc->current];
     int pid_counter = 0;
+
+    // printf("pc length: %i; pc->current: %i\n", pc->length, pc->current);
     for (int i = 0; i < pc->current; i++) {
         command_array* cmd = pc->command_arrays[i];
+        // printf("cmd %s\n", cmd->commands[0]);
 
         if (cmd->commands[0] == NULL) {
-            print_err();
+            if (non_empty_cmd(cmd)) {
+                print_err();
+            }
             continue;
         }
 
