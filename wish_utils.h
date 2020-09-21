@@ -18,7 +18,7 @@ void replace_path();
 void add_shell_path(char* path);
 void destroy_wish_state();
 
-void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input);
+int prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input);
 bool find_cmd(command_array* cmd);
 pid_t exec_command(command_array* cmd);
 void cd_(command_array* cmd);

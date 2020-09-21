@@ -4,15 +4,16 @@ wish_state* shell_state = NULL;
 char cwd[PATH_MAX];
 
 
-void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
+int prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
     char* new_line = NULL;
-    getline(&new_line, size, input);
+    int end = getline(&new_line, size, input);
     
     int len = strlen(new_line);
 
     new_line[len - 1] = '\0';
     
     *input_string_buffer_ptr = new_line;
+    return end;
 }
 
 /**
@@ -252,17 +253,19 @@ void batch_mode(int argc, char** filenames) {
         print_err();
         exit(1);
     }
-    
+
     char* filename = filenames[1];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         print_err();
+        exit(1);
     }
     char* new_line = NULL;
     size_t size = 0;
-    prompt_input(&new_line, &size, file);
+    int end = prompt_input(&new_line, &size, file);
+    // printf("end line: %i\n", end);
 
-    while(new_line != NULL && strcmp(new_line, "") != 0) {
+    while(new_line != NULL && strcmp(new_line, "") != 0 && end != -1) {
         parallel_commands* pc = quick_new_parallel_commands();
         bool success = parse_command(&pc, new_line);
         if (success) {
