@@ -51,8 +51,37 @@ void test_path() {
     free_all_commands_and_arr(&cmd);
 }
 
+void test_find_command() {
+    init_wish_state();
+    command_array* cmd = parse_simple_command_helper(strdup("ls"));
+    assert(find_cmd(cmd));
+    assert(compare_string("/bin/ls", cmd->commands[0]));
+    
+    command_array* cmd2 = parse_simple_command_helper(strdup("noexistscmd"));
+    assert(!find_cmd(cmd2));
+    assert(compare_string("noexistscmd", cmd2->commands[0]));
+    destroy_wish_state();
+    free_all_commands_and_arr(&cmd);
+    free_all_commands_and_arr(&cmd2);
+}
+
+void test_execommand() {
+    init_wish_state();
+    command_array* cmd = parse_simple_command_helper(strdup("ls"));
+    cmd->std_out = strdup("a.txt");
+    pid_t pid = exec_command(cmd);
+    if (pid == 0) {
+        exit(1);
+    } 
+    int status = 0;
+    waitpid(pid, &status, 0);
+    destroy_wish_state();
+    free_all_commands_and_arr(&cmd);
+}
+
 int main() {
     test_prompt_input();
+    test_execommand();
     test_cd();
     test_path();
 }
