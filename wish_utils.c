@@ -183,8 +183,10 @@ void execute(parallel_commands* pc) {
         command_array* cmd = pc->command_arrays[i];
 
         if (cmd->commands[0] == NULL) {
+            print_err();
             continue;
         }
+
         if (is_built_in_command(cmd)) {
             exec_built_in_command(cmd);
         } else {

@@ -80,7 +80,7 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
         // }
         char* sep = strtok_r(*last_part_ptr, " ", last_part_ptr);
         // printf("operator sep: %s\n", sep);
-        if (sep == NULL || command_arr->std_out != NULL) {
+        if (sep == NULL || command_arr->std_out != NULL || *last_part_ptr != NULL) {
             return NULL;
         }
         put_std_out(command_arr, strdup(sep));
