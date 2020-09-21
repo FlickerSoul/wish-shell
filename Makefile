@@ -47,5 +47,14 @@ leak_test: test_commands.o test_parallel_commands.o test_wish_utils.o
 	$(VALGRIND) ./test_wish_utils.o < wish_utils_test.in
 	rm a.txt
 
+test_wish: wish
+	./test-wish.sh
+
+run: wish
+	./wish
+
+vrun: wish
+	$(VALGRIND) ./wish
+
 clean:
 	rm -rf *~ *.o $(TARGETS) *.dSYM
