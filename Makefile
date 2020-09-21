@@ -36,12 +36,16 @@ test_parallel_commands: test_parallel_commands.o
 
 test_wish_utils: test_wish_utils.o
 	./test_wish_utils.o < wish_utils_test.in
+	rm a.txt
 
 wish: wish.c wish_utils.o commands.o parallel_commands.o
 	$(CXX) $(CXX_FLAGS) -o $@ $^
 
-leak_test: test_commands.o test_parallel_commands.o
-	$(VALGRIND) ./test_commands.o test_parallel_commands.o
+leak_test: test_commands.o test_parallel_commands.o test_wish_utils.o
+	$(VALGRIND) ./test_commands.o 
+	$(VALGRIND) ./test_parallel_commands.o 
+	$(VALGRIND) ./test_wish_utils.o < wish_utils_test.in
+	rm a.txt
 
 clean:
-	rm -f *~ *.o $(TARGETS)
+	rm -rf *~ *.o $(TARGETS) *.dSYM
