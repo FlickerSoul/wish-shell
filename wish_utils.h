@@ -24,5 +24,5 @@ pid_t exec_command(command_array* cmd);
 void cd_(command_array* cmd);
 void path_(command_array* cmd);
 
-void batch_mode();
+void batch_mode(int, char**);
 void interactive_mode();

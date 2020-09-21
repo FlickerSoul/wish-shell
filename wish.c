@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     init_wish_state();
 
     if (argc > 1) {
-        batch_mode(argv[1]);
+        batch_mode(argc, argv);
     } else {
         interactive_mode();
     }

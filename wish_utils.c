@@ -247,7 +247,13 @@ void destroy_wish_state() {
  * run batch mode by specifying 
  * a batch file path
  */
-void batch_mode(char* filename) {
+void batch_mode(int argc, char** filenames) {
+    if (argc > 2) {
+        print_err();
+        exit(1);
+    }
+    
+    char* filename = filenames[1];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         print_err();
@@ -286,6 +292,11 @@ void interactive_mode() {
     while(1) {
         printf("wish> ");
         prompt_input(&new_line, &line_size, stdin);
+
+        if (!strcmp(new_line, "")) {
+            continue;
+        }
+
         parallel_commands* pc = quick_new_parallel_commands();
         bool success = parse_command(&pc, new_line);
         if (success) {
