@@ -5,12 +5,16 @@
 #include "parallel_commands.h"
 
 typedef struct wish_state {
-    char* path;
+    char** path;
+    unsigned int current;
+    unsigned int size;
 } wish_state;
 
 extern wish_state* shell_state;
 
 void init_wish_state();
+void expand_path();
+void replace_path();
 void add_shell_path(char* path);
 void destroy_wish_state();
 

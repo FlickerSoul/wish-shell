@@ -27,7 +27,12 @@ void print_err() {
 /**
  * exit the shell
  */
-void exit_() {
+void exit_(command_array* cmd) {
+    int cmd_num = cmd->current - 1;
+    if (cmd_num > 1) {
+        print_err();
+        return;
+    }
     exit(0);
 }
 
@@ -41,17 +46,38 @@ void exit_() {
  */
 void cd_(command_array* cmd) {
     char* path = cmd->commands[1];
-    int result = chdir(path);
-    if (result != 0) {
-        perror("cannot cd to path");
-        // print_err();
+
+    int cmd_num = cmd->current - 1;
+    if (cmd_num == 1 || cmd_num > 2) {
+        print_err();
+        return;
     }
 
-    printf("%s\n", getcwd(cwd, sizeof(cwd)));
+    int result = chdir(path);
+    if (result != 0) {
+        print_err();
+        // perror("cannot cd to path");
+    }
+
+    // printf("%s\n", getcwd(cwd, sizeof(cwd)));
 }
 
 void add_shell_path(char* path) {
-    strcat(shell_state->path, path);
+    if (shell_state->current == shell_state->size) {
+        expand_path();
+    }
+    shell_state->path[shell_state->current++] = strdup(path);
+}
+
+void replace_path() {
+    char** new_paths = malloc(sizeof(char*));
+    for (int i = 0; i < shell_state->current; i++) {
+        free(shell_state->path[i]);
+    }
+    free(shell_state->path);
+
+    shell_state->current = 0;
+    shell_state->path = new_paths;
 }
 
 /**
@@ -60,16 +86,16 @@ void add_shell_path(char* path) {
 void path_(command_array* cmd) {
     struct stat sb;
     char* path = NULL;
+    replace_path();
     for (int i = 1; i < cmd->current - 1; i++) {
         path = cmd->commands[i];
         if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
-            add_shell_path(":");
             add_shell_path(path);
         } else {
             perror("adding non-dir to path");
         }
     }
-    printf("PATH: %s\n", shell_state->path);
+    // printf("PATH: %s\n", shell_state->path);
 }
 
 const char* built_in_commands[] = {"exit", "cd",  "path"};
@@ -89,7 +115,7 @@ bool is_built_in_command(command_array* cmd) {
 void exec_built_in_command(command_array* cmd) {
     char* cmd_str = cmd->commands[0];
     if (!strcmp(cmd_str, "exit")) {
-        exit_();
+        exit_(cmd);
     } else if (!strcmp(cmd_str, "cd")) {
         cd_(cmd);
     } else if (!strcmp(cmd_str, "path")) {
@@ -98,11 +124,11 @@ void exec_built_in_command(command_array* cmd) {
 }
 
 bool find_cmd(command_array* cmd) {
-    char* last = shell_state->path;
+    char** paths = shell_state->path;
     char* sep = NULL;
 
-    while ((sep = strtok_r(last, ":", &last)) != NULL) {
-        sep = strdup(sep);
+    for (int i = 0; i < shell_state->current; i++) {
+        sep = strdup(paths[i]);
         strcat(sep, "/");
         strcat(sep, cmd->commands[0]);
         if (access(sep,X_OK) == 0) {
@@ -181,13 +207,33 @@ void init_wish_state() {
     if (shell_state == NULL) {
         return;
     }
+    shell_state->size = 1;
+    shell_state->current = 1;
+    shell_state->path = malloc(sizeof(char*));
+    shell_state->path[0] = strdup("/bin");
+}
 
-    shell_state->path = strdup("/bin:/usr/bin");
+void expand_path() {
+    if (shell_state == NULL) {
+        return;
+    }
+
+    shell_state->size *= 2;
+
+    char** new_paths = malloc(shell_state->size * sizeof(char*));
+    for (int i = 0; i < shell_state->current; i++) {
+        new_paths[i] = shell_state->path[i];
+    }
+    free(shell_state->path);
+    shell_state->path = new_paths;
 }
 
 void destroy_wish_state() {
     if (shell_state == NULL) {
         return;
+    }
+    for (int i = 0; i < shell_state->current; i++) {
+        free(shell_state->path[i]);
     }
     free(shell_state->path);
     free(shell_state);
