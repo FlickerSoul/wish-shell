@@ -96,17 +96,61 @@ void exec_built_in_command(command_array* cmd) {
     }
 }
 
-void exec_command(command_array* cmd) {
+bool find_cmd(command_array* cmd) {
+    char* last = shell_state->path;
+    char* sep = NULL;
 
+    while ((sep = strtok_r(last, ":", &last)) != NULL) {
+        sep = strdup(sep);
+        strcat(sep, "/");
+        strcat(sep, cmd->commands[0]);
+        if (access(sep,X_OK) == 0) {
+            free(cmd->commands[0]);
+            cmd->commands[0] = sep;
+            return true;
+        } else {
+            free(sep);
+        }
+    }
+    return false;
+}
+
+pid_t exec_command(command_array* cmd) {
+    pid_t new_pid = fork();
+    if (new_pid == -1) {
+        perror("cannot fork new process");
+    } else if (new_pid == 0) {
+        if (find_cmd(cmd)) {
+            FILE* std_out_redir = NULL;
+
+            if (cmd->std_out != NULL) {
+                std_out_redir = fopen(cmd->std_out, "w");
+
+                if (std_out_redir == NULL) {
+                    perror("cannot open file");
+                }
+                dup2(fileno(std_out_redir), STDOUT_FILENO);
+            }
+
+            execv(cmd->commands[0], cmd->commands);
+            fclose(std_out_redir);
+            perror("cannot exec command");
+        } 
+        print_err();
+    }
+
+    return new_pid;
 }
 
 void redirect_stdout() {
-
+    
 }
 
 void execute(parallel_commands* pc) {
     // get the path var 
     // use access to find command 
+    pid_t pid_arr[pc->current];
+    int pid_counter = 0;
     for (int i = 0; i < pc->current; i++) {
         command_array* cmd = pc->command_arrays[i];
 
@@ -116,8 +160,18 @@ void execute(parallel_commands* pc) {
         if (is_built_in_command(cmd)) {
             exec_built_in_command(cmd);
         } else {
-            exec_command(cmd);
+            pid_t pid = exec_command(cmd);
+            if (pid == 0) {
+                exit(1);
+            } else if (pid != -1) {
+                pid_arr[pid_counter++] = pid;
+            }
         }
+    }
+
+    for (int i = 0; i < pid_counter; i++) {
+        int status = 0;
+        waitpid(pid_arr[i], &status, 0);
     }
 }
 
