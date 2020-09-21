@@ -178,7 +178,6 @@ pid_t exec_command(command_array* cmd) {
         } 
         print_err();
         // perror("cannot find command");
-        // print_err();
     }
 
     return new_pid;
@@ -194,15 +193,8 @@ void execute(parallel_commands* pc) {
     pid_t pid_arr[pc->current];
     int pid_counter = 0;
 
-    // printf("pc length: %i; pc->current: %i\n", pc->length, pc->current);
     for (int i = 0; i < pc->current; i++) {
         command_array* cmd = pc->command_arrays[i];
-        // printf("cmd %s", cmd->commands[0]);
-
-        // for (int i = 1; i < cmd->current; i++) {
-            // printf(" %s", cmd->commands[i]);
-        // }
-        // printf("\n");
 
         if (cmd->commands[0] == NULL) {
             if (non_empty_cmd(cmd)) {
@@ -303,11 +295,6 @@ void batch_mode(int argc, char** filenames) {
 }
 
 void interactive_mode() {
-    // TODO 
-    // Open file 
-    // Close file 
-    // read line by line? 
-    // exec command by command 
     if (shell_state == NULL) {
         perror("Cannot init shell. Exiting.\n");
         exit(1);

@@ -72,23 +72,14 @@ void push_command_array(parallel_commands** pc_ptr, command_array* new_command_a
 }
 
 command_array* parse_operator(command_array* command_arr, char operator, char** last_part_ptr) {
-    // printf("operator: %c %i\n", operator, operator == '>');
     if( operator == '>') {
-        // if (command_arr->current == 0) {
-        //      return NULL;
-        // }
-        // printf("operator last: %s %p %p\n", *last_part_ptr, *last_part_ptr, last_part_ptr);
 
         char* sep = strtok_r(*last_part_ptr, " ", last_part_ptr);
-        // printf("operator sep: %s; last %p %p\n", sep, *last_part_ptr, last_part_ptr);
 
         if (sep == NULL || command_arr->std_out != NULL || (*last_part_ptr != NULL && strcmp(*last_part_ptr, "")) ) {
             return NULL;
         }
-        // bool l = ;
-        // if (l) {
-            // return NULL;
-        // }
+
         put_std_out(command_arr, strdup(sep));
     }
 
@@ -96,44 +87,32 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
 }
 
 bool parse_command(parallel_commands** pc_ptr, char* new_line) {
-    // char* last_part = strtok_r(new_line, "", &last_part);
     char* line = new_line;
     char* last_part = NULL;
     const char* sep_char = NULL;
     char* sep = NULL;
-    // command_array* command_arr = quick_new_command_arr();
+
     command_array* temp_arr = NULL;
-    // push_command_array(pc_ptr, command_arr);
 
     int k = 0;
     while ((last_part = strtok_r(line, "&", &line)) != NULL) {
-        // printf("new last part: %s; remaining: %s; %i\n", last_part, line, k);
         command_array* command_arr = quick_new_command_arr();
         push_command_array(pc_ptr, command_arr);
         int counter = 0;
         while (last_part != NULL && counter < strlen(last_part)) {
-            // printf("last part: %s;and len: %lu\n", last_part, strlen(last_part));
-            // printf("coutner char: %c\n", last_part[counter]);
             sep_char = is_operator(last_part[counter]);
-            // printf("sep_char: %s\n", sep_char);
 
             if (sep_char != NULL) {
-                // if it's an operator 
                 if (counter == 0) {
                     last_part += 1;
-                    // printf("changed: %s\n", last_part);
                     sep = NULL;
                 } else {
                     sep = strtok_r(last_part, sep_char, &last_part);
                 }
 
-                // printf("parsed sep: %s, last: %s\n", sep, last_part);
                 counter = 0;
 
-                // printf("sep: %s\n", sep);
-
                 if (sep != NULL) {
-                    // break;
                     push_command(&command_arr, strdup(sep));
                 }
 
@@ -142,15 +121,11 @@ bool parse_command(parallel_commands** pc_ptr, char* new_line) {
                 if (temp_arr == NULL) {
                     return false;
 
-                    // printf("new temp arr");
                     wrap_up_command(&command_arr);
-                    // command_arr = temp_arr;
-                    // push_command_array(pc_ptr, command_arr);
                 }
             } else {
                 counter += 1;
             }
-            // if it's not pass
         }
 
         sep = strtok_r(last_part, "", &last_part);
@@ -160,13 +135,7 @@ bool parse_command(parallel_commands** pc_ptr, char* new_line) {
         
         wrap_up_command(&command_arr);
     }
-    // printf("remaining last part: %s\n", last_part);
-    // sep = strtok_r(last_part, "", &last_part);
-    // if (sep != NULL) {
-        // push_command(&command_arr, strdup(sep));
-    // }
 
-    // wrap_up_command(&command_arr);
     free(new_line);
 
     return true;
