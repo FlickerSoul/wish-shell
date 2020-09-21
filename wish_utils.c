@@ -43,7 +43,8 @@ void cd_(command_array* cmd) {
     char* path = cmd->commands[1];
     int result = chdir(path);
     if (result != 0) {
-        print_err();
+        perror("cannot cd to path");
+        // print_err();
     }
 
     printf("%s\n", getcwd(cwd, sizeof(cwd)));
@@ -139,7 +140,8 @@ pid_t exec_command(command_array* cmd) {
             fclose(std_out_redir);
             perror("cannot exec command");
         } 
-        print_err();
+        perror("cannot find command");
+        // print_err();
     }
 
     return new_pid;
