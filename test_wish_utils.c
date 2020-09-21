@@ -41,11 +41,20 @@ void test_cd() {
 }
 
 void test_path() {
-    command_array* cmd = parse_simple_command_helper(strdup("path /bin"));
+    command_array* cmd = parse_simple_command_helper(strdup("path /bin /usr/bin"));
     init_wish_state();
-    assert(compare_string(shell_state->path, "/bin:/usr/bin"));
+    assert(shell_state->current == 1);
+    assert(compare_string(shell_state->path[0], "/bin"));
+
+    replace_path();
+    assert(shell_state->current == 0);
+
     path_(cmd);
-    assert(compare_string(shell_state->path, "/bin:/usr/bin:/bin"));
+    assert(shell_state->current == 2);
+
+    assert(compare_string(shell_state->path[0], "/bin"));
+    assert(compare_string(shell_state->path[1], "/usr/bin"));
+
     destroy_wish_state();
     assert(shell_state == NULL);
     free_all_commands_and_arr(&cmd);
