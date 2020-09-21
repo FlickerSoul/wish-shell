@@ -115,23 +115,26 @@ bool find_cmd(command_array* cmd) {
     return false;
 }
 
+FILE* redirect_stdout(char* path) {
+    if (path != NULL) {
+        FILE* file = fopen(path, "w");
+
+        if (file == NULL) {
+            perror("cannot open file");
+        }
+        dup2(fileno(file), STDOUT_FILENO);
+        return file;
+    }
+    return NULL;
+}
+
 pid_t exec_command(command_array* cmd) {
     pid_t new_pid = fork();
     if (new_pid == -1) {
         perror("cannot fork new process");
     } else if (new_pid == 0) {
         if (find_cmd(cmd)) {
-            FILE* std_out_redir = NULL;
-
-            if (cmd->std_out != NULL) {
-                std_out_redir = fopen(cmd->std_out, "w");
-
-                if (std_out_redir == NULL) {
-                    perror("cannot open file");
-                }
-                dup2(fileno(std_out_redir), STDOUT_FILENO);
-            }
-
+            FILE* std_out_redir = redirect_stdout(cmd->std_out);
             execv(cmd->commands[0], cmd->commands);
             fclose(std_out_redir);
             perror("cannot exec command");
@@ -140,10 +143,6 @@ pid_t exec_command(command_array* cmd) {
     }
 
     return new_pid;
-}
-
-void redirect_stdout() {
-    
 }
 
 void execute(parallel_commands* pc) {
