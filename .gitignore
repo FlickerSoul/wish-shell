@@ -1,2 +1,6 @@
 *.o
 *.dSYM
+wish
+tests-out/
+tests/
+test-wish.sh
