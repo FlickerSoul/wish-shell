@@ -66,7 +66,19 @@ void add_shell_path(char* path) {
     if (shell_state->current == shell_state->size) {
         expand_path();
     }
-    shell_state->path[shell_state->current++] = strdup(path);
+
+    char* temp = NULL;
+    if (path[0] != '/') {
+        getcwd(cwd, PATH_MAX);
+        temp = malloc((strlen(path) + strlen(cwd)) * sizeof(char));
+        strcpy(temp, cwd);
+        strcat(temp, "/");
+        strcat(temp, path);
+    } else {
+        temp = strdup(path);
+    }
+
+    shell_state->path[shell_state->current++] = temp;
 }
 
 void replace_path() {
@@ -77,6 +89,7 @@ void replace_path() {
     free(shell_state->path);
 
     shell_state->current = 0;
+    shell_state->size = 1;
     shell_state->path = new_paths;
 }
 
@@ -89,11 +102,7 @@ void path_(command_array* cmd) {
     replace_path();
     for (int i = 1; i < cmd->current - 1; i++) {
         path = cmd->commands[i];
-        if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
-            add_shell_path(path);
-        } else {
-            perror("adding non-dir to path");
-        }
+        add_shell_path(path);
     }
     // printf("PATH: %s\n", shell_state->path);
 }

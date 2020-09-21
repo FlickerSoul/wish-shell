@@ -55,9 +55,22 @@ void test_path() {
     assert(compare_string(shell_state->path[0], "/bin"));
     assert(compare_string(shell_state->path[1], "/usr/bin"));
 
+    command_array* cmd2 = parse_simple_command_helper(strdup("path tests"));
+
+    path_(cmd2);
+    assert(shell_state->current == 1);
+    
+    char cwd[256];
+    char* temp = malloc((strlen("tests") + strlen(cwd)) * sizeof(char));
+    strcat(temp, cwd);
+    strcat(temp, "/");
+    strcat(temp, "tests");
+    assert(compare_string(temp, shell_state->path[0]));
+
     destroy_wish_state();
     assert(shell_state == NULL);
     free_all_commands_and_arr(&cmd);
+    free_all_commands_and_arr(&cmd2);
 }
 
 void test_find_command() {
