@@ -163,9 +163,11 @@ pid_t exec_command(command_array* cmd) {
             FILE* std_out_redir = redirect_stdout(cmd->std_out);
             execv(cmd->commands[0], cmd->commands);
             fclose(std_out_redir);
-            perror("cannot exec command");
+            print_err();
+            // perror("cannot exec command");
         } 
-        perror("cannot find command");
+        print_err();
+        // perror("cannot find command");
         // print_err();
     }
 
@@ -250,14 +252,20 @@ void batch_mode(char* filename) {
     }
     char* new_line = NULL;
     size_t size = 0;
+    prompt_input(&new_line, &size, file);
 
-    do {
-        prompt_input(&new_line, &size, file);
+    while(new_line != NULL && strcmp(new_line, "") != 0) {
         parallel_commands* pc = quick_new_parallel_commands();
-        parse_command(&pc, new_line);
-        execute(pc);
+        bool success = parse_command(&pc, new_line);
+        if (success) {
+            execute(pc);
+        } else {
+            print_err();
+        }
         free_parallel_commands_and_all(&pc);
-    } while(new_line != NULL && strcmp(new_line, "") != 0);
+        prompt_input(&new_line, &size, file);
+    } 
+    fclose(file);
 }
 
 void interactive_mode() {
@@ -277,8 +285,12 @@ void interactive_mode() {
         printf("wish> ");
         prompt_input(&new_line, &line_size, stdin);
         parallel_commands* pc = quick_new_parallel_commands();
-        parse_command(&pc, new_line);
-        execute(pc);
+        bool success = parse_command(&pc, new_line);
+        if (success) {
+            execute(pc);
+        } else {
+            print_err();
+        }
         free_parallel_commands_and_all(&pc);
     }
 }
