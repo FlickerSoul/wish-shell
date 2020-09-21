@@ -15,10 +15,12 @@ int main(int argc, char* argv[]) {
     init_wish_state();
 
     if (argc > 1) {
-        batch_mode();
+        batch_mode(argv[1]);
     } else {
         interactive_mode();
     }
 
     destroy_wish_state();
+
+    return 0;
 }

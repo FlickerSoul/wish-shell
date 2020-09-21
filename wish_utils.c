@@ -5,7 +5,6 @@ char cwd[PATH_MAX];
 
 
 void prompt_input(char** input_string_buffer_ptr, size_t* size, FILE* input) {
-    printf("wish> ");
     char* new_line = NULL;
     getline(&new_line, size, input);
     
@@ -244,8 +243,21 @@ void destroy_wish_state() {
  * run batch mode by specifying 
  * a batch file path
  */
-void batch_mode() {
+void batch_mode(char* filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        print_err();
+    }
+    char* new_line = NULL;
+    size_t size = 0;
 
+    do {
+        prompt_input(&new_line, &size, file);
+        parallel_commands* pc = quick_new_parallel_commands();
+        parse_command(&pc, new_line);
+        execute(pc);
+        free_parallel_commands_and_all(&pc);
+    } while(new_line != NULL && strcmp(new_line, "") != 0);
 }
 
 void interactive_mode() {
@@ -262,6 +274,7 @@ void interactive_mode() {
     char* new_line = NULL;
     size_t line_size = 0;
     while(1) {
+        printf("wish> ");
         prompt_input(&new_line, &line_size, stdin);
         parallel_commands* pc = quick_new_parallel_commands();
         parse_command(&pc, new_line);
