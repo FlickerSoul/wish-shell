@@ -67,6 +67,8 @@ void test_path() {
     strcat(temp, "tests");
     assert(compare_string(temp, shell_state->path[0]));
 
+    free(temp);
+
     destroy_wish_state();
     assert(shell_state == NULL);
     free_all_commands_and_arr(&cmd);
