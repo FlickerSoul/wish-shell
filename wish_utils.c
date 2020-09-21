@@ -197,7 +197,12 @@ void execute(parallel_commands* pc) {
     // printf("pc length: %i; pc->current: %i\n", pc->length, pc->current);
     for (int i = 0; i < pc->current; i++) {
         command_array* cmd = pc->command_arrays[i];
-        // printf("cmd %s\n", cmd->commands[0]);
+        // printf("cmd %s", cmd->commands[0]);
+
+        // for (int i = 1; i < cmd->current; i++) {
+            // printf(" %s", cmd->commands[i]);
+        // }
+        // printf("\n");
 
         if (cmd->commands[0] == NULL) {
             if (non_empty_cmd(cmd)) {
