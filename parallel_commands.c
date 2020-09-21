@@ -108,7 +108,7 @@ bool parse_command(parallel_commands** pc_ptr, char* new_line) {
         if (sep_char != NULL) {
             // if it's an operator 
             if (counter == 0) {
-                last_part[counter] = ' ';
+                last_part += 1;
                 // printf("changed: %s\n", last_part);
                 sep = NULL;
             } else {
