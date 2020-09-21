@@ -29,11 +29,6 @@ parallel_commands* quick_new_parallel_commands() {
     return new_parallel_commands(2, 0);
 }
 
-void free_parallel_commands(parallel_commands* pc) {
-    free(pc->command_arrays);
-    free(pc);
-}
-
 void free_parallel_commands_and_all(parallel_commands** pc_ptr) {
     if (pc_ptr == NULL || *pc_ptr == NULL) {
         return;
@@ -44,27 +39,25 @@ void free_parallel_commands_and_all(parallel_commands** pc_ptr) {
     for (int i = 0; i < pc->current; i++) {
         free_all_commands_and_arr(&pc->command_arrays[i]);
     }
-    free_parallel_commands(pc);
+    free(pc->command_arrays);
+    free(pc);
     *pc_ptr = NULL;
 }
 
-void resize_parallel_commands(parallel_commands** old_cmds_ptr) {
-    if (old_cmds_ptr == NULL || *old_cmds_ptr == NULL) {
+void resize_parallel_commands(parallel_commands* pc) {
+    if (pc == NULL) {
         return;
     }
 
-    parallel_commands* old_cmds = *old_cmds_ptr;
-    parallel_commands* new_cmds = new_parallel_commands(old_cmds->length * 2, old_cmds->current);
+    pc->length *= 2;
+    
+    command_array** new_cmd_arrs = malloc(pc->length * sizeof(command_array*));
 
-    if (new_cmds == NULL) {
-        return;
+    for (int i = 0; i < pc->current; i++) {
+        new_cmd_arrs[i] = pc->command_arrays[i];
     }
-
-    for (int i = 0; i < old_cmds->current; i++) {
-        new_cmds->command_arrays[i] = old_cmds->command_arrays[i];
-    }
-    free_parallel_commands(old_cmds);
-    *old_cmds_ptr = new_cmds;
+    free(pc->command_arrays);
+    pc->command_arrays = new_cmd_arrs;
 }
 
 void push_command_array(parallel_commands** pc_ptr, command_array* new_command_arr) {
@@ -74,7 +67,7 @@ void push_command_array(parallel_commands** pc_ptr, command_array* new_command_a
     parallel_commands* pc = *pc_ptr;
     pc->command_arrays[pc->current++] = new_command_arr;
     if (pc->current == pc->length) {
-        resize_parallel_commands(pc_ptr);
+        resize_parallel_commands(*pc_ptr);
     }
 }
 
