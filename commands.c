@@ -36,23 +36,19 @@ void free_all_commands_and_arr(command_array** command_arr_ptr) {
     *command_arr_ptr = NULL;
 }
 
-void resize_command_arr(command_array** old_arr_ptr) {
-    if (old_arr_ptr == NULL || *old_arr_ptr == NULL) {
+void resize_command_arr(command_array* arr) {
+    if (arr == NULL) {
         return;
     }
 
-    command_array* old_arr = *old_arr_ptr;
+    arr->length *= 2;
 
-    command_array* new_arr = new_command_arr(old_arr->length * 2, old_arr->current, old_arr->std_out);
-    if (new_arr == NULL) {
-        return;
+    char** new_command_char_arr = malloc(arr->length * sizeof(char*));
+    for (int i = 0; i < arr->current; i++) {
+        new_command_char_arr[i] = arr->commands[i];
     }
-
-    for (int i = 0; i < old_arr->current; i++) {
-        new_arr->commands[i] = old_arr->commands[i];
-    }
-    free_command_arr(old_arr);
-    *old_arr_ptr = new_arr;
+    free(arr->commands);
+    arr->commands = new_command_char_arr;
 }
 
 void put_std_out(command_array* command_arr, char* std_out) {
@@ -73,6 +69,6 @@ void push_command(command_array** command_arr_ptr, char* command) {
     command_array* command_arr = *command_arr_ptr;
     command_arr->commands[command_arr->current++] = command;
     if (command_arr->current == command_arr->length) {
-        resize_command_arr(command_arr_ptr);
+        resize_command_arr(*command_arr_ptr);
     }
 }
