@@ -16,11 +16,6 @@ command_array* quick_new_command_arr() {
     return new_command_arr(10, 0, NULL);
 }
 
-void free_command_arr(command_array* command_arr) {
-    free(command_arr->commands);
-    free(command_arr);
-}
-
 void free_all_commands_and_arr(command_array** command_arr_ptr) {
     if (command_arr_ptr == NULL || *command_arr_ptr == NULL) {
         return;
@@ -32,7 +27,8 @@ void free_all_commands_and_arr(command_array** command_arr_ptr) {
         free(command_arr->commands[i]);
     }
     free(command_arr->std_out);
-    free_command_arr(command_arr);
+    free(command_arr->commands);
+    free(command_arr);
     *command_arr_ptr = NULL;
 }
 
