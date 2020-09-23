@@ -4,7 +4,7 @@
 void test_commands() {
     command_array* c = quick_new_command_arr();
     free_all_commands_and_arr(&c);
-    c = new_command_arr(1, 0, NULL);
+    c = new_command_arr(1, 0, NULL, NULL);
     assert(c != NULL);
     assert(c->length == 1);
     assert(c->current == 0);
@@ -19,6 +19,10 @@ void test_commands() {
     char* dummy_out_name = strdup("std_out");
     put_std_out(c, dummy_out_name);
     assert(compare_string(c->std_out, dummy_out_name));
+
+    char* dummy_in_name = strdup("in");
+    put_std_in(c, dummy_in_name);
+    assert(compare_string(c->std_in, dummy_in_name));
 
     push_command(&c, dummy_command2);
     wrap_up_command(&c);

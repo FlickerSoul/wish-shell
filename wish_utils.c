@@ -176,6 +176,25 @@ FILE* redirect_stdout(char* path) {
     return NULL;
 }
 
+FILE* redirect_stdin(char* path) {
+    if (path != NULL) {
+        FILE* file = fopen(path, "r");
+
+        if (file == NULL) {
+            perror("cannot open file");
+        }
+
+        int result = dup2(fileno(file), STDIN_FILENO);
+        if (result == -1) {
+            perror("cannot redirect stdin from a file");
+        }
+
+        return file;
+    }
+
+    return NULL;
+}
+
 pid_t exec_command(command_array* cmd) {
     pid_t new_pid = fork();
     if (new_pid == -1) {
@@ -183,8 +202,10 @@ pid_t exec_command(command_array* cmd) {
     } else if (new_pid == 0) {
         if (find_cmd(cmd)) {
             FILE* std_out_redir = redirect_stdout(cmd->std_out);
+            FILE* std_in_redir = redirect_stdin(cmd->std_in);
             execv(cmd->commands[0], cmd->commands);
             fclose(std_out_redir);
+            fclose(std_in_redir);
             print_err();
             // perror("cannot exec command");
         } 

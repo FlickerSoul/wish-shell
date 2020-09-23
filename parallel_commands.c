@@ -1,8 +1,8 @@
 #include "parallel_commands.h"
 #include <stdio.h>
 
-const char operators[] = {' ', '>'};
-const char* operator_map[] = {" ", ">"};
+const char operators[] = {' ', '>', '<'};
+const char* operator_map[] = {" ", ">", "<"};
 unsigned short operator_num = 2;
 
 const char* is_operator(char part) {
@@ -72,7 +72,7 @@ void push_command_array(parallel_commands** pc_ptr, command_array* new_command_a
 }
 
 command_array* parse_operator(command_array* command_arr, char operator, char** last_part_ptr) {
-    if( operator == '>') {
+    if ( operator == '>') {
 
         char* sep = strtok_r(*last_part_ptr, " ", last_part_ptr);
 
@@ -81,6 +81,14 @@ command_array* parse_operator(command_array* command_arr, char operator, char** 
         }
 
         put_std_out(command_arr, strdup(sep));
+    } else if (operator == '<') {
+        char* sep = strtok_r(*last_part_ptr, " ", last_part_ptr);
+
+        if (sep == NULL) {
+            return NULL;
+        }
+
+        put_std_in(command_arr, strdup(sep));
     }
 
     return command_arr;

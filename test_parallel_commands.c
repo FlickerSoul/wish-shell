@@ -81,9 +81,13 @@ void test_parallel_commands() {
     // assert(compare_string(cmd->std_out, "h"));
     // assert(cmd->current == 3);
 
-    parse_command(&pc, strdup("j k&l m>n"));
+    parse_command(&pc, strdup("j k&l m>n<o"));
     assert(pc->current == 4);
     assert(pc->length == 8);
+
+    cmd = pc->command_arrays[pc->current-1];
+    assert(compare_string(cmd->std_out, "n"));
+    assert(compare_string(cmd->std_out, "o"));
 
     cmd = pc->command_arrays[pc->current-2];
     assert(compare_string(cmd->commands[0], "j"));

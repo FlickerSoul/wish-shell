@@ -1,6 +1,6 @@
 #include "commands.h"
 
-command_array* new_command_arr(int size, int current, char* std_out) {
+command_array* new_command_arr(int size, int current, char* std_out, char* std_in) {
     command_array* command_arr = malloc(sizeof(command_array));
     if (command_arr == NULL) {
         return NULL;
@@ -8,12 +8,13 @@ command_array* new_command_arr(int size, int current, char* std_out) {
     command_arr->length = size;
     command_arr->current = current;
     command_arr->std_out = std_out;
+    command_arr->std_in = std_in;
     command_arr->commands = malloc(command_arr->length * (sizeof(char*)));
     return command_arr;
 }
 
 command_array* quick_new_command_arr() {
-    return new_command_arr(10, 0, NULL);
+    return new_command_arr(10, 0, NULL, NULL);
 }
 
 void free_all_commands_and_arr(command_array** command_arr_ptr) {
@@ -27,6 +28,7 @@ void free_all_commands_and_arr(command_array** command_arr_ptr) {
         free(command_arr->commands[i]);
     }
     free(command_arr->std_out);
+    free(command_arr->std_in);
     free(command_arr->commands);
     free(command_arr);
     *command_arr_ptr = NULL;
@@ -52,6 +54,13 @@ void put_std_out(command_array* command_arr, char* std_out) {
         return;
     }
     command_arr->std_out = std_out;
+}
+
+void put_std_in(command_array* command_arr, char* std_in) {
+    if (command_arr == NULL) {
+        return;
+    }
+    command_arr->std_in = std_in;
 }
 
 void wrap_up_command(command_array** command_arr_ptr) {
