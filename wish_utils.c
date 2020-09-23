@@ -257,6 +257,15 @@ void execute(parallel_commands* pc) {
     }
 }
 
+int str_count(char* temp) {
+    int count = 0;
+    while((temp = strstr(temp, ":")) != NULL) {
+        count++;
+        temp++;
+    }
+    return count;
+}
+
 void init_wish_state() {
     shell_state = malloc(sizeof(wish_state));
     if (shell_state == NULL) {
@@ -264,8 +273,16 @@ void init_wish_state() {
     }
     shell_state->size = 1;
     shell_state->current = 1;
-    shell_state->path = malloc(sizeof(char*));
-    shell_state->path[0] = strdup("/bin");
+
+    char* sys_path = getenv("PATH");
+    int count = str_count(sys_path);
+
+    shell_state->path = malloc((count + 1) * sizeof(char*));
+
+    char* sep = NULL;
+    while ((sep = strtok_r(sys_path, ":", &sys_path)) != NULL && count >= 0) {
+        shell_state->path[count--] = strdup(sep);
+    }
 }
 
 void expand_path() {
