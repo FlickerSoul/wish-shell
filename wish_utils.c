@@ -30,7 +30,8 @@ void print_err() {
 void exit_(command_array* cmd) {
     int cmd_num = cmd->current - 1;
     if (cmd_num > 1) {
-        print_err();
+        // print_err();
+        perror("exit takes not args");
         return;
     }
     exit(0);
@@ -49,14 +50,15 @@ void cd_(command_array* cmd) {
 
     int cmd_num = cmd->current - 1;
     if (cmd_num == 1 || cmd_num > 2) {
-        print_err();
+        // print_err();
+        perror("cd takes only one command");
         return;
     }
 
     int result = chdir(path);
     if (result != 0) {
-        print_err();
-        // perror("cannot cd to path");
+        // print_err();
+        perror("cannot cd to path");
     }
 
     // printf("%s\n", getcwd(cwd, sizeof(cwd)));
@@ -137,7 +139,7 @@ bool find_cmd(command_array* cmd) {
     char* sep = NULL;
 
     for (int i = 0; i < shell_state->current; i++) {
-        char* sep = malloc((strlen(paths[i]) + strlen(cmd->commands[0])) * sizeof(char) + 7);
+        char* sep = malloc((strlen(paths[i]) + strlen(cmd->commands[0])) * sizeof(char) + 2);
         strcpy(sep, paths[i]);
         strcat(sep, "/");
         strcat(sep, cmd->commands[0]);
@@ -206,11 +208,11 @@ pid_t exec_command(command_array* cmd) {
             execv(cmd->commands[0], cmd->commands);
             fclose(std_out_redir);
             fclose(std_in_redir);
-            print_err();
-            // perror("cannot exec command");
+            // print_err();
+            perror("cannot exec command");
         } 
-        print_err();
-        // perror("cannot find command");
+        // print_err();
+        perror("cannot find command");
     }
 
     return new_pid;
@@ -231,7 +233,8 @@ void execute(parallel_commands* pc) {
 
         if (cmd->commands[0] == NULL) {
             if (non_empty_cmd(cmd)) {
-                print_err();
+                // print_err();
+                perror("empty command");
             }
             continue;
         }
@@ -298,14 +301,16 @@ void destroy_wish_state() {
  */
 void batch_mode(int argc, char** filenames) {
     if (argc > 2) {
-        print_err();
+        // print_err();
+        perror("too many args");
         exit(1);
     }
 
     char* filename = filenames[1];
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        print_err();
+        // print_err();
+        perror("cannot open command list file");
         exit(1);
     }
     char* new_line = NULL;
@@ -319,7 +324,8 @@ void batch_mode(int argc, char** filenames) {
         if (success) {
             execute(pc);
         } else {
-            print_err();
+            // print_err();
+            perror("cannot parse command");
         }
         free_parallel_commands_and_all(&pc);
         prompt_input(&new_line, &size, file);
@@ -348,7 +354,8 @@ void interactive_mode() {
         if (success) {
             execute(pc);
         } else {
-            print_err();
+            // print_err();
+            perror("cannot parse command");
         }
         free_parallel_commands_and_all(&pc);
     }
