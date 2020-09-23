@@ -162,7 +162,15 @@ FILE* redirect_stdout(char* path) {
         if (file == NULL) {
             perror("cannot open file");
         }
-        dup2(fileno(file), STDOUT_FILENO);
+        int result = dup2(fileno(file), STDOUT_FILENO);
+        if (result == -1) {
+            perror("cannot redirect stdout to a file");
+        }
+
+        result = dup2(fileno(file), STDERR_FILENO);
+        if (result == -1) {
+            perror("cannot redirect stderr to a file");
+        }
         return file;
     }
     return NULL;
