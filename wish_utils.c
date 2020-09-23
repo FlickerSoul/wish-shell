@@ -70,7 +70,7 @@ void add_shell_path(char* path) {
     char* temp = NULL;
     if (path[0] != '/') {
         getcwd(cwd, PATH_MAX);
-        temp = malloc((strlen(path) + strlen(cwd)) * sizeof(char));
+        temp = malloc((strlen(path) + strlen(cwd)) * sizeof(char) + 2);
         strcpy(temp, cwd);
         strcat(temp, "/");
         strcat(temp, path);
@@ -137,9 +137,11 @@ bool find_cmd(command_array* cmd) {
     char* sep = NULL;
 
     for (int i = 0; i < shell_state->current; i++) {
-        sep = strdup(paths[i]);
+        char* sep = malloc((strlen(paths[i]) + strlen(cmd->commands[0])) * sizeof(char) + 7);
+        strcpy(sep, paths[i]);
         strcat(sep, "/");
         strcat(sep, cmd->commands[0]);
+
         if (access(sep,X_OK) == 0) {
             free(cmd->commands[0]);
             cmd->commands[0] = sep;
@@ -147,6 +149,8 @@ bool find_cmd(command_array* cmd) {
         } else {
             free(sep);
         }
+
+        sep = NULL;
     }
     return false;
 }
