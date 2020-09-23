@@ -49,6 +49,7 @@ leak_test: test_commands.o test_parallel_commands.o test_wish_utils.o
 
 test_wish: wish
 	./test-wish.sh
+	rm -rf tests-out
 
 run: wish
 	./wish
